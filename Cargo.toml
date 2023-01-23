@@ -1,0 +1,19 @@
+[package]
+name = "rusty_os"
+version = "0.1.0"
+authors = ["EmeraldMasta"]
+edition = "2018"
+
+[dependencies]
+bootloader = { version = "0.9.8", features = ["map_physical_memory"]}
+
+[profile.dev]
+panic = "abort"
+
+[profile.release]
+panic = "abort"
+strip = true
+opt-level = 3
+lto = true
+codegen-units = 1
+

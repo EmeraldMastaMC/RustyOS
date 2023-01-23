@@ -1,0 +1,2 @@
+qemu-system-x86_64 -drive format=raw,file=target/x86_64-rustyos/debug/bootimage-rusty_os.bin
+dd if=target/x86_64-rustyos/debug/bootimage-rustyos.bin of=/dev/<CHANGE ME> && sync
