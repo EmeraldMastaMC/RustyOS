@@ -6,8 +6,8 @@ use core::arch::asm;
 mod ports;
 mod vga;
 use core::panic::PanicInfo;
-use vga::vga_writer::VGAWriter;
 use vga::vga_writer::Color;
+use vga::vga_writer::VGAWriter;
 
 #[panic_handler]
 fn panic(info: &PanicInfo) -> ! {
@@ -24,9 +24,6 @@ pub extern "C" fn _start() -> ! {
     VGAWriter::disable_cursor();
     VGAWriter::toggle_blinking();
     VGAWriter::set_bgcolor(Color::LightBlue);
-
-
-
 
     VGAWriter::set_text_color(Color::Yellow);
     println!("{}", welcome);

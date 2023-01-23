@@ -37,8 +37,7 @@ static mut CURSOR_OFFSET: u32 = 0;
 static mut VGA_WRITER: VGAWriter = VGAWriter {};
 static mut CURRENT_COLOR: Color = Color::White;
 
-pub struct VGAWriter {
-}
+pub struct VGAWriter {}
 
 #[allow(dead_code)]
 impl<'a> VGAWriter {
@@ -88,7 +87,7 @@ impl<'a> VGAWriter {
     }
     pub fn set_bgcolor(color: Color) {
         unsafe {
-        BG_COLOR = color;
+            BG_COLOR = color;
             for i in 0..(VGA_HEIGHT * VGA_WIDTH) {
                 let i = (i * CELL_WIDTH + COLOR_OFFSET) as usize;
                 VGAWriter::write_back_buffer(
@@ -164,8 +163,7 @@ impl<'a> VGAWriter {
         }
     }
     pub fn new() -> Self {
-        VGAWriter {
-        }
+        VGAWriter {}
     }
     pub fn disable_cursor() {
         outb(0x3D4, 0x0A);
@@ -236,4 +234,3 @@ macro_rules! println {
     () => ($crate::print!("\n"));
     ($($arg:tt)*) => ($crate::print!("{}\n", format_args!($($arg)*)));
 }
-
