@@ -23,9 +23,9 @@ pub extern "C" fn _start() -> ! {
 
     VGAWriter::disable_cursor();
     VGAWriter::toggle_blinking();
-    VGAWriter::set_bgcolor(Color::LightBlue);
+    VGAWriter::set_bgcolor(Color::White);
 
-    VGAWriter::set_text_color(Color::Yellow);
+    VGAWriter::set_text_color(Color::Blue);
     println!("{}", welcome);
 
     VGAWriter::set_text_color(Color::Green);
