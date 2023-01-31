@@ -1,17 +1,15 @@
 #![no_std]
 #![no_main]
-
 use core::arch::asm;
 
 mod ports;
 mod vga;
 use core::panic::PanicInfo;
-use vga::vga_writer::Color;
-use vga::vga_writer::VGAWriter;
+use vga::VGA;
 
 #[panic_handler]
 fn panic(info: &PanicInfo) -> ! {
-    VGAWriter::set_text_color(Color::Red);
+    VGA::set_text_color(vga::Color::Red);
     println!("\n{}", info);
     loop {}
 }
@@ -21,14 +19,14 @@ pub extern "C" fn _start() -> ! {
     let welcome = "Welcome to RustyOS! There isn't much at the moment, but I hope to be able to add more to this OS in the future!";
     let cool_string = "cool string";
 
-    VGAWriter::disable_cursor();
-    VGAWriter::toggle_blinking();
-    VGAWriter::set_bgcolor(Color::White);
+    VGA::disable_cursor();
+    VGA::toggle_blinking();
+    VGA::set_bgcolor(vga::Color::White);
 
-    VGAWriter::set_text_color(Color::Blue);
+    VGA::set_text_color(vga::Color::Blue);
     println!("{}", welcome);
 
-    VGAWriter::set_text_color(Color::Green);
+    VGA::set_text_color(vga::Color::Green);
     println!("println! macro: {}, {}, {}", 42, 2.0 / 3.0, cool_string);
     panic!("Exception: testing panic! macro");
 }
