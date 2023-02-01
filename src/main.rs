@@ -1,16 +1,15 @@
 #![no_std]
 #![no_main]
 use core::arch::asm;
+use core::panic::PanicInfo;
 
 mod ports;
 mod rand;
 mod vga;
-use core::panic::PanicInfo;
-use vga::VGA;
 
 #[panic_handler]
 fn panic(info: &PanicInfo) -> ! {
-    VGA::set_text_color(vga::Color::Red);
+    vga::set_text_color(vga::Color::Red);
     println!("\n{}", info);
     loop {
         unsafe {
@@ -22,22 +21,24 @@ fn panic(info: &PanicInfo) -> ! {
 #[no_mangle]
 pub extern "C" fn _start() -> ! {
     let welcome = "Welcome to RustyOS! There isn't much at the moment, but I hope to be able to add more to this OS in the future!";
-    let cool_string = "cool string";
 
     vga_init();
-    VGA::set_bgcolor(vga::Color::White);
+    vga::set_bgcolor(vga::Color::White);
 
-    VGA::set_text_color(vga::Color::Blue);
+    vga::set_text_color(vga::Color::Blue);
     println!("{}", welcome);
 
-    VGA::set_text_color(vga::Color::Green);
+    vga::set_text_color(vga::Color::Green);
+    println!("Random  8 bit: {}", rdrand!(u8));
+    println!("Random 16 bit: {}", rdrand!(u16));
+    println!("Random 32 bit: {}", rdrand!(u32));
+    println!("Random 64 bit: {}", rdrand!(u64));
     println!(
-        "println! macro: {}, {}, {}",
-        rdrand!(u8),
-        rand::rand_float(),
-        cool_string
+        "Random 64 bit decimal number from 0 to 1 exclusive: {}",
+        rand::rand_float()
     );
-    panic!("Exception: testing panic! macro");
+
+    panic!("Hello, Panic!");
 }
 
 #[allow(dead_code)]
@@ -46,6 +47,6 @@ unsafe fn hlt() {
 }
 
 fn vga_init() {
-    VGA::disable_cursor();
-    VGA::toggle_blinking();
+    vga::disable_cursor();
+    vga::toggle_blinking();
 }
