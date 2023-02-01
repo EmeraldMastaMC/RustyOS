@@ -141,7 +141,7 @@ impl<'a> VGA {
         // Offset cursor for next character print
         VGA::next_char();
     }
-    /// Puts a character on the screen at a given position. Supports newlines
+    /// Puts a character on the screen at a given position. Supports newlines.
     /// # Example
     /// ```rust
     /// VGA::putcpos('X', vga::Color::Red, 0, 5);
@@ -172,7 +172,7 @@ impl<'a> VGA {
             VGA::putc(character, color);
         }
     }
-    /// Changes the background color to a specified color
+    /// Changes the background color to a specified color.
     /// # Example
     /// ```rust
     /// VGA::set_bgcolor(vga::Color::LightBLue);
@@ -206,14 +206,14 @@ impl<'a> VGA {
         VGA::set_current_color(color);
     }
 
-    /// Displays the changes you've made to the screen
+    /// Displays the changes you've made to the screen.
     /// # Example
     /// ```
     /// VGA::puts("Hello", vga::Color::White);
     /// VGA::swap_buf();
     /// ```
     /// This will write the contents of the string to the back buffer, then `VGA::swap_buf()` will display the back
-    /// buffer to the screen
+    /// buffer to the screen.
     pub fn swap_buf() {
         for i in 0..(VGA_HEIGHT * VGA_WIDTH * CELL_WIDTH) {
             let i = i as usize;
@@ -221,7 +221,7 @@ impl<'a> VGA {
         }
     }
 
-    /// Disables the VGA visual cursor
+    /// Disables the VGA visual cursor.
     pub fn disable_cursor() {
         outb(0x3D4, 0x0A);
         outb(0x3D5, 0x20);
@@ -252,11 +252,13 @@ impl<'a> VGA {
 
 /// Private functions for the inner working of the public VGA API
 impl VGA {
+    /// Resets the cursor to column 0, row 24.
     fn reset_cursor() {
         VGA::set_cursor_offset(
             (VGA::get_pos(0, (VGA_HEIGHT - 1) as usize) / CELL_WIDTH as usize) as u32,
         );
     }
+    /// Moves the cursor to the next character cell.
     fn next_char() {
         let cursor_offset = VGA::get_cursor_offset();
         if cursor_offset >= LAST_CURSOR_POSITION {
@@ -265,6 +267,7 @@ impl VGA {
         }
         VGA::set_cursor_offset(cursor_offset + 1);
     }
+    /// Moves the cursor down a line.
     fn nextln() {
         let cursor_offset = VGA::get_cursor_offset();
 
@@ -277,6 +280,7 @@ impl VGA {
         let line_offset = cursor_offset % VGA_WIDTH;
         VGA::set_cursor_offset(cursor_offset + (VGA_WIDTH - line_offset));
     }
+    /// Moves the contests from each row to the row above it, and clears the bottom row.
     fn shift_up() {
         for column in 0..VGA_WIDTH {
             let column = column as usize;
@@ -302,19 +306,23 @@ impl VGA {
             VGA::putcpos('\0', Color::White, column, (VGA_HEIGHT - 1) as usize);
         }
     }
+    /// Write a byte at a given offset in the back buffer.
     fn write_back_buffer(index: usize, data: u8) {
         unsafe {
             BACK_BUFFER[index] = data;
         }
     }
+    /// Read a byte at a given offset in the back buffer.
     fn read_back_buffer(index: usize) -> u8 {
         unsafe { BACK_BUFFER[index] }
     }
+    /// Update the screen at a given offset.
     fn write_front_buffer(index: usize, data: u8) {
         unsafe {
             *FRONT_BUFFER.offset(index as isize) = data;
         }
     }
+    /// Get the memory offset for a certain column and row.
     fn get_pos(column: usize, row: usize) -> usize {
         let pos = ((column + (row * VGA_WIDTH as usize)) * CELL_WIDTH as usize) as usize;
         pos
@@ -323,27 +331,33 @@ impl VGA {
 
 /// Some private set and get functions for setting and getting static mutable variables
 impl VGA {
+    /// Get the value of the `CURRENT_COLOR` static variable.
     fn get_current_color() -> Color {
         unsafe { CURRENT_COLOR }
     }
 
+    /// Set the value of the `CURRENT_COLOR` static variable.
     fn set_current_color(color: Color) {
         unsafe {
             CURRENT_COLOR = color;
         }
     }
 
+    /// Get the value of the `BG_COLOR` static variable.
     fn get_bg_color() -> Color {
         unsafe { BG_COLOR }
     }
+    /// Set the value of the `BG_COLOR` static variable.
     fn set_bg_color(color: Color) {
         unsafe {
             BG_COLOR = color;
         }
     }
+    /// Get the value of the `CURSOR_OFFSET` static variable.
     fn get_cursor_offset() -> u32 {
         unsafe { CURSOR_OFFSET }
     }
+    /// Set the value of the `CURSOR_OFFSET` static variable.
     fn set_cursor_offset(offset: u32) {
         unsafe {
             CURSOR_OFFSET = offset;
@@ -369,11 +383,30 @@ impl VGA {
     }
 }
 
+/// # print
+/// Print a formatted string to the screen.
+/// # Example
+/// ```
+/// let username = "Bob";
+/// let age = 16;
+/// print!("Hi, {}, you're {} years old!", username, age);
+/// ```
+/// This will print "Hi, Bob, you're 16 years old!" to the screen. Works identically to the standard library `print!`
+/// macro.
 #[macro_export]
 macro_rules! print {
     ($($arg:tt)*) => ($crate::vga::VGA::_print(format_args!($($arg)*)));
 }
 
+/// Print a formatted string to the screen with a new line.
+/// # Example
+/// ```
+/// let username = "Bob";
+/// let age = 16;
+/// println!("Hi, {}, you're {} years old!", username, age);
+/// ```
+/// This will print "Hi, Bob, you're 16 years old!\n" to the screen. Works identically to the standard library
+/// `println!` macro.
 #[macro_export]
 macro_rules! println {
     () => ($crate::print!("\n"));
