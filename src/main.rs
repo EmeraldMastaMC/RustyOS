@@ -5,17 +5,13 @@
 use core::arch::asm;
 use core::panic::PanicInfo;
 
-use rusty_os::{vga, rand, gdt, interrupts, rdrand, println};
+use rusty_os::{gdt, interrupts, rand, vga, print, println, rdrand};
 
 #[panic_handler]
 fn panic(info: &PanicInfo) -> ! {
     vga::set_text_color(vga::Color::Red);
     println!("\n{}", info);
-    loop {
-        unsafe {
-            hlt();
-        }
-    }
+    loop {}
 }
 
 #[no_mangle]
@@ -39,11 +35,6 @@ pub extern "C" fn _start() -> ! {
         rand::rand_float()
     );
 
-
-    unsafe {
-        *(0xDEADBEEF as *mut usize) = 42;
-    }
-    // x86_64::instructions::interrupts::int3();
     panic!("Hello, Panic!");
 }
 
@@ -58,7 +49,11 @@ fn vga_init() {
 }
 
 fn init() {
-    vga_init();
-    interrupts::init();
     gdt::init();
+    interrupts::init();
+    unsafe {
+        interrupts::PICS.lock().initialize();
+    }
+    x86_64::instructions::interrupts::enable();
+    vga_init();
 }

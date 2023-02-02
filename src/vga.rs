@@ -1,8 +1,10 @@
 //! # VGA
 //! This module allows interactions with the screen while in VGA text mode
 
-use core::fmt;
+use x86_64::instructions::interrupts;
+
 use crate::io::*;
+use core::fmt;
 /// # Color
 /// In a VGA character cell in VGA text mode, the foreground and background colors are represented with one byte.
 ///
@@ -89,7 +91,7 @@ static mut CURSOR_OFFSET: u32 = 0;
 /// # VGA Writer
 /// A writer instance for the _print method to use, because write_str takes `&self` as an argument, so it needs a struct
 /// instance to write to the screen.
-static mut VGA_WRITER: VGAWriter = VGAWriter {};
+static VGA_WRITER: spin::Mutex<VGAWriter> = spin::Mutex::new(VGAWriter {});
 
 /// # Current Color
 /// The current foreground color. Default is white.
@@ -113,6 +115,7 @@ pub fn putc(character: char, color: Color) {
 
     if cursor_offset >= LAST_CURSOR_POSITION {
         nextln();
+        putc(character, color);
         return;
     }
     let offset = (cursor_offset * CELL_WIDTH) as usize;
@@ -351,9 +354,9 @@ fn set_cursor_offset(offset: u32) {
 #[doc(hidden)]
 pub fn _print(args: fmt::Arguments) {
     use fmt::Write;
-    unsafe {
-        VGA_WRITER.write_fmt(args).unwrap();
-    }
+    interrupts::without_interrupts(|| {
+        VGA_WRITER.lock().write_fmt(args).unwrap();
+    });
 }
 impl fmt::Write for VGAWriter {
     fn write_str(&mut self, outstr: &str) -> fmt::Result {
