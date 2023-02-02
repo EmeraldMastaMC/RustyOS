@@ -3,9 +3,7 @@
 use core::arch::asm;
 use core::panic::PanicInfo;
 
-mod ports;
-mod rand;
-mod vga;
+use rusty_os::{vga, rand, rdrand, println};
 
 #[panic_handler]
 fn panic(info: &PanicInfo) -> ! {

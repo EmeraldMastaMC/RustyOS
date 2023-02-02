@@ -1,9 +1,8 @@
 //! # VGA
 //! This module allows interactions with the screen while in VGA text mode
 
-use crate::ports::io::{inb, outb};
 use core::fmt;
-
+use crate::io::*;
 /// # Color
 /// In a VGA character cell in VGA text mode, the foreground and background colors are represented with one byte.
 ///
