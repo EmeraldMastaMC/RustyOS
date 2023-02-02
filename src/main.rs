@@ -1,9 +1,11 @@
 #![no_std]
 #![no_main]
+#![feature(abi_x86_interrupt)]
+
 use core::arch::asm;
 use core::panic::PanicInfo;
 
-use rusty_os::{vga, rand, rdrand, println};
+use rusty_os::{vga, rand, gdt, interrupts, rdrand, println};
 
 #[panic_handler]
 fn panic(info: &PanicInfo) -> ! {
@@ -20,7 +22,8 @@ fn panic(info: &PanicInfo) -> ! {
 pub extern "C" fn _start() -> ! {
     let welcome = "Welcome to RustyOS! There isn't much at the moment, but I hope to be able to add more to this OS in the future!";
 
-    vga_init();
+    init();
+
     vga::set_bgcolor(vga::Color::White);
 
     vga::set_text_color(vga::Color::Blue);
@@ -36,6 +39,11 @@ pub extern "C" fn _start() -> ! {
         rand::rand_float()
     );
 
+
+    unsafe {
+        *(0xDEADBEEF as *mut usize) = 42;
+    }
+    // x86_64::instructions::interrupts::int3();
     panic!("Hello, Panic!");
 }
 
@@ -47,4 +55,10 @@ unsafe fn hlt() {
 fn vga_init() {
     vga::disable_cursor();
     vga::toggle_blinking();
+}
+
+fn init() {
+    vga_init();
+    interrupts::init();
+    gdt::init();
 }
