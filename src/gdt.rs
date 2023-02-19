@@ -22,10 +22,8 @@ lazy_static! {
             let stack_start = VirtAddr::from_ptr(unsafe { &STACK });
 
             // Where the stack ends: the top of the stack
-            let stack_end = stack_start + STACK_SIZE;
-
             // The stack starts at the top and goes to the bottom, so we return the top
-            stack_end
+            stack_start + STACK_SIZE
         };
         tss
     };

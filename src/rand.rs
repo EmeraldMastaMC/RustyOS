@@ -111,8 +111,8 @@ pub fn rand_float() -> f64 {
     const MAX_64_BIT_VALUE: u64 = 0xFFFF_FFFF_FFFF_FFFF;
     let random_int = rdseed!(u64);
     if random_int == 0 {
-        return 0.0;
+        0.0
     } else {
-        return (random_int - 1) as f64 / MAX_64_BIT_VALUE as f64;
+        (random_int - 1) as f64 / MAX_64_BIT_VALUE as f64
     }
 }

@@ -240,7 +240,7 @@ pub fn toggle_blinking() {
     attribute_mode = inb(0x03C1);
 
     // Toggle bit 3 (starting from 0) which is the blinking bit
-    attribute_mode = attribute_mode ^ 0b0000_1000;
+    attribute_mode ^= 0b0000_1000;
 
     // Send attribute mode to port 0x03C0 to toggle the blinking
     outb(0x03C0, attribute_mode);
@@ -315,8 +315,7 @@ fn write_front_buffer(index: usize, data: u8) {
 }
 /// Get the memory offset for a certain column and row.
 fn get_pos(column: usize, row: usize) -> usize {
-    let pos = ((column + (row * VGA_WIDTH as usize)) * CELL_WIDTH as usize) as usize;
-    pos
+    (column + (row * VGA_WIDTH as usize)) * CELL_WIDTH as usize
 }
 
 /// Get the value of the `CURRENT_COLOR` static variable.
@@ -350,6 +349,11 @@ fn set_cursor_offset(offset: u32) {
     unsafe {
         CURSOR_OFFSET = offset;
     }
+}
+/// Disables the visual cursor and toggle's blinking
+pub fn init() {
+    disable_cursor();
+    toggle_blinking();
 }
 #[doc(hidden)]
 pub fn _print(args: fmt::Arguments) {
