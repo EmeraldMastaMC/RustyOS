@@ -1,6 +1,4 @@
-qemu-system-x86_64 -drive format=raw,file=target/x86_64-rustyos/debug/bootimage-rusty_os.bin
-qemu-system-x86_64 -drive format=raw,file=target/x86_64-rustyos/release/bootimage-rusty_os.bin
-kvm -drive format=raw,file=target/x86_64-rustyos/debug/bootimage-rusty_os.bin
-kvm -drive format=raw,file=target/x86_64-rustyos/release/bootimage-rusty_os.bin
+qemu-system-x86_64 -drive format=raw,file=target/x86_64-rustyos/debug/bootimage-rusty_os.bin -enable-kvm
+qemu-system-x86_64 -drive format=raw,file=target/x86_64-rustyos/release/bootimage-rusty_os.bin -enable-kvm
 dd if=target/x86_64-rustyos/debug/bootimage-rusty_os.bin of=/dev/<CHANGE ME> && sync
 dd if=target/x86_64-rustyos/release/bootimage-rusty_os.bin of=/dev/<CHANGE ME> && sync

@@ -23,3 +23,23 @@ pub fn inb(port: u16) -> u8 {
         info
     }
 }
+
+pub fn outw(port: u16, val: u16) {
+    unsafe {
+        asm!(
+            "out dx, ax",
+            in("dx") port,
+            in("ax") val
+        );
+    }
+}
+
+pub fn outl(port: u16, val: u32) {
+    unsafe {
+        asm!(
+            "out dx, eax",
+            in("dx") port,
+            in("eax") val
+        );
+    }
+}
